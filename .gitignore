@@ -1,0 +1,9 @@
+# Dependencies
+/node_modules
+/dist
+/package-lock.json
+/npm-debug.log*
+
+# IDE/OS files
+.DS_Store
+.vscode

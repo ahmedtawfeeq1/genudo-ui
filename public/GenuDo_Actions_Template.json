@@ -1,0 +1,120 @@
+{
+  "name": "GenuDo Actions Template",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "17635bb9-e239-4895-9b3f-9d4ff24f0777",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        0
+      ],
+      "id": "d4793536-b756-4c83-ad18-7c5e921492a7",
+      "name": "get_from_genudo",
+      "webhookId": "17635bb9-e239-4895-9b3f-9d4ff24f0777"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "38c7af5d-ce75-416a-87e5-d8591f918d23",
+              "name": "action_results",
+              "value": "(e.g. available slots to book a meeting, client order details, etc)",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        0
+      ],
+      "id": "6d652d1f-4c65-4c1e-aa90-55b12dfaae9d",
+      "name": "set_action_results",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Your action nodes go here.\n**Add any nodes** to get/add data then respond with the action results to genudo.",
+        "width": 360
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -220,
+        -40
+      ],
+      "typeVersion": 1,
+      "id": "477e874e-9bee-4d28-8ecd-0cfac981f730",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.action_results }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        0
+      ],
+      "id": "7fbca65d-9389-43f4-89ac-3de9d0b4e36c",
+      "name": "respond_to_genudo",
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "get_from_genudo": {
+      "main": [
+        [
+          {
+            "node": "set_action_results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set_action_results": {
+      "main": [
+        [
+          {
+            "node": "respond_to_genudo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "897f7355-334f-4d86-b88f-37e6aadca9d6",
+  "meta": {
+    "instanceId": "713580f9db0afa55deae9655f25324485526e3202ce847f9c9b83582a40c9806"
+  },
+  "id": "lqMaZBvZQbGabjbU",
+  "tags": [
+    {
+      "name": "genudo templates",
+      "id": "T1t2PhQI7kXpu69T",
+      "createdAt": "2025-11-29T01:31:39.293Z",
+      "updatedAt": "2025-11-29T01:31:39.293Z"
+    }
+  ]
+}

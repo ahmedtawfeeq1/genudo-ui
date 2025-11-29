@@ -1,0 +1,245 @@
+@import 'highlight.js/styles/github.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    --primary: 253 73% 64%;
+    --primary-foreground: 0 0% 100%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    --brand-primary: #6c5ce7;
+    --brand-primary-light: #a29bfe;
+    --brand-primary-dark: #483D8B;
+    --brand-white: #ffffff;
+    --brand-gray-light: #f5f7fa;
+    --brand-gray: #e2e8f0;
+    --brand-text-dark: #2d3748;
+    --brand-text-light: #718096;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-lightbg text-textcolor font-sans;
+  }
+
+  .font-sans {
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
+}
+
+@layer components {
+  .card-shadow {
+    @apply shadow-card hover:shadow-card-hover transition-shadow duration-200;
+  }
+  
+  .metric-card {
+    @apply bg-white rounded-8 p-6 card-shadow;
+  }
+  
+  .agent-card {
+    @apply bg-white rounded-8 p-6 card-shadow;
+  }
+
+  .settings-card {
+    @apply bg-white rounded-lg shadow-sm mb-6;
+  }
+  
+  .sidebar-item {
+    @apply flex items-center gap-3 py-2 px-3 rounded-md text-gray-600 hover:bg-gray-100 font-medium;
+  }
+  
+  .sidebar-item.active {
+    @apply bg-primary-50 text-primary;
+  }
+
+  .content-container {
+    @apply p-4 md:p-6 max-w-[1600px] mx-auto;
+  }
+
+  .content-section {
+    @apply mb-6;
+  }
+
+  .content-grid {
+    @apply grid gap-4 md:gap-6;
+  }
+
+  .responsive-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6;
+  }
+
+  .space-y-responsive {
+    @apply space-y-4 md:space-y-6;
+  }
+
+  /* Custom styles for markdown content */
+  .markdown-content {
+    @apply text-sm leading-relaxed;
+  }
+
+  .markdown-content > *:first-child {
+    @apply mt-0;
+  }
+
+  .markdown-content > *:last-child {
+    @apply mb-0;
+  }
+
+  /* Override highlight.js styles for better integration */
+  .hljs {
+    @apply bg-gray-900 text-gray-100 p-3 rounded-md overflow-x-auto;
+  }
+
+  /* Enhanced scroll behavior for chat components */
+  [data-radix-scroll-area-root] {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  [data-radix-scroll-area-viewport] {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: inherit;
+    /* Ensure smooth scrolling */
+    scroll-behavior: smooth;
+  }
+  
+  [data-radix-scroll-area-scrollbar] {
+    display: flex;
+    user-select: none;
+    touch-action: none;
+    padding: 2px;
+    background: rgba(0, 0, 0, 0.05);
+    transition: background 160ms ease-out;
+    /* Make scrollbar always visible for better UX */
+    opacity: 1;
+  }
+  
+  [data-radix-scroll-area-scrollbar]:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+  
+  [data-radix-scroll-area-thumb] {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    position: relative;
+    /* Enhanced visibility */
+    min-height: 20px;
+  }
+
+  /* Chat-specific layout improvements */
+  .chat-panel-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .chat-messages-container {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .chat-input-area {
+    flex-shrink: 0;
+    border-top: 1px solid rgb(229 231 235);
+    background: white;
+  }
+
+  /* Ensure textarea behaves properly in chat */
+  .chat-textarea {
+    resize: none;
+    overflow-y: auto;
+    min-height: 80px;
+    max-height: 120px;
+  }
+}
+
+/* Animation for fade-in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+.react-flow__edge-path { stroke: #64748b !important; stroke-width: 2px; stroke-dasharray: 5; }
