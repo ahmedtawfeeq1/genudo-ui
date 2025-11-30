@@ -1,4 +1,4 @@
-import { db } from "@/lib/mock-db";
+ 
 import type { KnowledgeFile } from "@/types/agent";
 
 /**
@@ -17,11 +17,7 @@ export const createUrlKnowledgeFile = async (
   url: string,
   name?: string
 ): Promise<KnowledgeFile> => {
-  const { data: { user } } = await db.auth.getUser();
-
-  if (!user) {
-    throw new Error("User not authenticated");
-  }
+  const user = { id: 'user-static' } as any;
 
   // Validate URL format
   try {
@@ -57,11 +53,7 @@ export const createQAKnowledgeFile = async (
   question: string,
   answer: string
 ): Promise<KnowledgeFile> => {
-  const { data: { user } } = await db.auth.getUser();
-
-  if (!user) {
-    throw new Error("User not authenticated");
-  }
+  const user = { id: 'user-static' } as any;
 
   if (!question.trim() || !answer.trim()) {
     throw new Error("Question and answer are required");
@@ -93,11 +85,7 @@ export const createBulkQAKnowledgeFiles = async (
   agentId: string,
   qaPairs: Array<{ question: string; answer: string }>
 ): Promise<KnowledgeFile[]> => {
-  const { data: { user } } = await db.auth.getUser();
-
-  if (!user) {
-    throw new Error("User not authenticated");
-  }
+  const user = { id: 'user-static' } as any;
 
   const now = new Date().toISOString();
   const records: KnowledgeFile[] = qaPairs.map(({ question, answer }) => ({
@@ -124,11 +112,7 @@ export const updateKnowledgeFile = async (
   fileId: string,
   updates: Partial<Pick<KnowledgeFile, "file_name" | "file_url" | "status" | "metadata">>
 ): Promise<KnowledgeFile> => {
-  const { data: { user } } = await db.auth.getUser();
-
-  if (!user) {
-    throw new Error("User not authenticated");
-  }
+  const user = { id: 'user-static' } as any;
 
   for (const agentId of Object.keys(knowledgeStore)) {
     const idx = knowledgeStore[agentId].findIndex(f => f.id === fileId);

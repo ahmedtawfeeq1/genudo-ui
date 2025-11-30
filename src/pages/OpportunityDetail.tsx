@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Building2, Phone, Mail, Calendar, User, Target, MessageCircle, Loader2 } from 'lucide-react';
-import { db } from "@/lib/mock-db";
+ 
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { findConversationByOpportunityId } from '@/utils/conversationLookup';
@@ -29,38 +29,32 @@ const OpportunityDetail = () => {
   const [loading, setLoading] = useState(true);
   const [inboxLoading, setInboxLoading] = useState(false);
   useEffect(() => {
-    if (user && id) {
+    if (id) {
       fetchOpportunityData();
     }
-  }, [user, id]);
+  }, [id]);
   const fetchOpportunityData = async () => {
     try {
-      const {
-        data: opportunityData,
-        error: opportunityError
-      } = await db.from('opportunities').select(`
-          *,
-          pipelines!inner(pipeline_name),
-          stages!inner(stage_name),
-          contacts(name, email, phone_number)
-        `).eq('id', id).eq('user_id', user?.id).single();
-      if (opportunityError) {
-        console.error('Error fetching opportunity:', opportunityError);
-        throw opportunityError;
-      }
-      setOpportunity({
-        ...opportunityData,
-        pipeline_name: opportunityData.pipelines?.pipeline_name,
-        stage_name: opportunityData.stages?.stage_name
-      });
+      await new Promise(res => setTimeout(res, 150));
+      const now = new Date().toISOString();
+      const opportunityData: any = {
+        id,
+        opportunity_name: 'Sample Opportunity',
+        pipeline_id: 'pipe-1',
+        pipeline_name: 'Sales',
+        stage_name: 'Qualification',
+        client_name: 'Acme Corp',
+        client_email: 'client@example.com',
+        client_phone_number: '+15550123',
+        created_at: now,
+        status: 'active',
+        source: 'Website',
+        tags: 'priority,new',
+        opportunity_notes: 'Static demo notes',
+      };
+      setOpportunity(opportunityData);
     } catch (error: any) {
-      console.error('Error fetching opportunity data:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to fetch opportunity data",
-        variant: "destructive"
-      });
-      // Navigate to pipelines instead of opportunities
+      toast({ title: 'Error', description: 'Failed to load opportunity', variant: 'destructive' });
       navigate('/pipelines');
     } finally {
       setLoading(false);

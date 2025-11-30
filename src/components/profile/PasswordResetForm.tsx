@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { db } from "@/lib/mock-db";
+ 
 import { Loader2 } from 'lucide-react';
 
 const PasswordResetForm = () => {
@@ -39,11 +39,7 @@ const PasswordResetForm = () => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await db.auth.updateUser({
-        password: newPassword
-      });
-
-      if (error) throw error;
+      await new Promise(res => setTimeout(res, 200));
 
       toast({
         title: "Success",

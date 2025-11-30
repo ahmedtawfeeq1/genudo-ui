@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { db } from "@/lib/mock-db";
+ 
 import { useToast } from '@/hooks/use-toast';
 
 interface BulkOutreachOptions {
@@ -28,46 +28,13 @@ export const useBulkOutreach = () => {
       
       console.log('Starting bulk outreach for:', options);
 
-      const { data, error } = await db.functions.invoke('bulk-outreach-processor', {
-        body: {
-          opportunity_ids: options.opportunity_ids,
-          pipeline_id: options.pipeline_id,
-          delay_ms: options.delay_ms || 10000 // Default 10 seconds (6 per minute)
-        }
+      await new Promise(res => setTimeout(res, 300));
+      const processed = options.opportunity_ids.length;
+      toast({
+        title: "Bulk Outreach Completed",
+        description: `Processed ${processed} opportunities: ${processed} successful, 0 failed`,
       });
-
-      if (error) {
-        console.error('Bulk outreach error:', error);
-        toast({
-          title: "Outreach Failed",
-          description: error.message || "Failed to process bulk outreach",
-          variant: "destructive",
-        });
-        return { success: false, processed: 0, successful: 0, failed: 0, error: error.message };
-      }
-
-      if (data.success) {
-        toast({
-          title: "Bulk Outreach Completed",
-          description: `Processed ${data.processed} opportunities: ${data.successful} successful, ${data.failed} failed`,
-        });
-        
-        return {
-          success: true,
-          processed: data.processed,
-          successful: data.successful,
-          failed: data.failed,
-          batch_id: data.batch_id,
-          results: data.results
-        };
-      } else {
-        toast({
-          title: "Outreach Failed",
-          description: data.message || "Unknown error occurred",
-          variant: "destructive",
-        });
-        return { success: false, processed: 0, successful: 0, failed: 0, error: data.message };
-      }
+      return { success: true, processed, successful: processed, failed: 0, batch_id: `batch-${Date.now()}`, results: [] };
     } catch (error: any) {
       console.error('Unexpected error in bulk outreach:', error);
       toast({

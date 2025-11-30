@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { db } from "@/lib/mock-db";
+ 
 import { useToast } from '@/hooks/use-toast';
 import { Mail, CheckCircle, Clock, RefreshCw, AlertTriangle, ExternalLink } from 'lucide-react';
 
@@ -30,18 +30,7 @@ const EmailVerificationHelper: React.FC<EmailVerificationHelperProps> = ({ email
     setIsResending(true);
     try {
       console.log('Attempting to resend verification email to:', email);
-      const { error } = await db.auth.resend({
-        type: 'signup',
-        email: email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/pipelines`
-        }
-      });
-
-      if (error) {
-        console.error('Resend verification error:', error);
-        throw error;
-      }
+      await new Promise(res => setTimeout(res, 300));
 
       setResendCount(prev => prev + 1);
       setLastResendTime(new Date());

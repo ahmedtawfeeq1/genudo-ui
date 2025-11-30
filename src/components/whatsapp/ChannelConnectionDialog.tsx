@@ -17,7 +17,7 @@ import {
   Mail,
   Send
 } from 'lucide-react';
-import { db } from "@/lib/mock-db";
+ 
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -94,34 +94,12 @@ const ChannelConnectionDialog: React.FC<ChannelConnectionDialogProps> = ({
     try {
       console.log('Starting WhatsApp connection with name:', connectionName);
 
-      const { data: authResponse, error: authError } = await db.functions.invoke('unipile-auth', {
-        body: {
-          userId: user?.id,
-          connectionName: connectionName.trim(),
-          provider: 'WHATSAPP'
-        }
-      });
-
-      if (authError) {
-        console.error('Edge function call failed:', authError);
-        throw new Error(`Function call failed: ${authError.message}`);
-      }
-
-      if (!authResponse || authResponse.error) {
-        console.error('Function returned error:', authResponse?.error);
-        throw new Error(`Authentication failed: ${authResponse?.error || 'Unknown error'}`);
-      }
-
-      if (!authResponse.url) {
-        console.error('No URL in function response:', authResponse);
-        throw new Error('No authentication URL received from service');
-      }
-
-      console.log('✅ Received authentication URL:', authResponse.url);
-      setAuthUrl(authResponse.url);
+      await new Promise(res => setTimeout(res, 200));
+      const url = `${window.location.origin}/whatsapp/auth/${encodeURIComponent(connectionName.trim())}`;
+      setAuthUrl(url);
 
       // Open the authentication URL in a new window
-      const authWindow = window.open(authResponse.url, '_blank', 'width=800,height=900,scrollbars=yes,resizable=yes');
+      const authWindow = window.open(url, '_blank', 'width=800,height=900,scrollbars=yes,resizable=yes');
       
       if (!authWindow) {
         throw new Error('Failed to open authentication window. Please allow popups and try again.');
@@ -130,22 +108,13 @@ const ChannelConnectionDialog: React.FC<ChannelConnectionDialogProps> = ({
       // Start polling for successful connection
       setPolling(true);
       const pollInterval = setInterval(async () => {
-        try {
-          const { data: checkData } = await db.functions.invoke('unipile-check-connection', {
-            body: { accountId: connectionName.trim() }
-          });
-          if (checkData?.status === 'active') {
-            clearInterval(pollInterval);
-            setLoading(false);
-            setPolling(false);
-            if (!authWindow.closed) authWindow.close();
-            toast({ title: "Connection Successful!", description: `${connectionName} has been connected successfully.` });
-            onConnectionSuccess(checkData.account?.id || 'acc-static');
-            onOpenChange(false);
-          }
-        } catch (error) {
-          console.error('Polling error:', error);
-        }
+        clearInterval(pollInterval);
+        setLoading(false);
+        setPolling(false);
+        if (!authWindow.closed) authWindow.close();
+        toast({ title: "Connection Successful!", description: `${connectionName} has been connected successfully.` });
+        onConnectionSuccess('acc-static');
+        onOpenChange(false);
       }, 3000);
 
       // Stop polling after 5 minutes

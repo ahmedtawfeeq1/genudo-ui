@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, AlertCircle, X, RefreshCw } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import { db } from '@/lib/mock-db';
+ 
 
 type PageState = 'checking' | 'success' | 'duplicate' | 'error';
 
@@ -109,59 +109,11 @@ const WhatsAppSuccess = () => {
   };
 
   const initAuthenticationInBackground = async () => {
-    try {
-      addLog('🔐 Starting background authentication for detailed account info');
-      const { data } = await db.auth.getSession();
-      addLog('📋 Background session check:', data.session?.user?.id);
-
-      if (data.session?.user && dbAccountId) {
-        fetchAccountDetails(data.session, dbAccountId);
-      }
-
-      setSession(data.session);
-    } catch (error) {
-      console.error('Error in background authentication:', error);
-      addLog('❌ Error in background authentication', error);
-      // Don't change UI state for background auth errors in direct redirect case
-    }
-
-    const { data: { subscription } } = db.auth.onAuthStateChange((_event, session) => {
-      addLog('🔄 Background auth state changed:', session?.user?.id);
-      setSession(session);
-
-      if (session?.user && dbAccountId) {
-        fetchAccountDetails(session, dbAccountId);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    addLog('🔐 Background auth disabled in static mode');
   };
 
   const initAuthentication = async () => {
-    try {
-      const { data } = await db.auth.getSession();
-      addLog('📋 Initial session:', data.session?.user?.id);
-      setSession(data.session);
-
-      if (data.session?.user) {
-        handleAuthenticatedUser(data.session);
-      }
-    } catch (error) {
-      console.error('Error getting session:', error);
-      addLog('❌ Error getting session', error);
-      setTimeout(initAuthentication, 1000);
-    }
-
-    const { data: { subscription } } = db.auth.onAuthStateChange((_event, session) => {
-      addLog('🔄 Auth state changed:', session?.user?.id);
-      setSession(session);
-
-      if (session?.user) {
-        handleAuthenticatedUser(session);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    addLog('🔐 Auth disabled in static mode');
   };
 
   const handleAuthenticatedUser = (userSession: any) => {
@@ -183,9 +135,7 @@ const WhatsAppSuccess = () => {
     addLog(`🔍 Fetching detailed account info - DB Account ID: ${currentDbAccountId} (Attempt: ${retryCount + 1})`);
 
     try {
-      const { data: accountData } = await db.functions.invoke('unipile-check-connection', {
-        body: { pendingId: currentDbAccountId, userId: userSession.user.id }
-      });
+      const accountData = null as any;
 
       if (!accountData) {
         console.error('❌ Account not found or access denied');
@@ -205,9 +155,7 @@ const WhatsAppSuccess = () => {
           // with the External ID directly?
           if (!urlPendingId && urlAccountId) {
             addLog('⚠️ DB lookup failed, trying check-connection with External ID directly...');
-            const { data: checkData, error: checkError } = await db.functions.invoke('unipile-check-connection', {
-              body: { accountId: urlAccountId }
-            });
+            const checkData = null as any; const checkError = null as any;
             if (!checkError && checkData?.status === 'active') {
               // Success!
               addLog('✅ Fallback check success:', checkData.account);
@@ -233,12 +181,7 @@ const WhatsAppSuccess = () => {
         // We pass:
         // accountId: The External ID from URL (urlAccountId) if available.
         // pendingId: The DB UUID (currentDbAccountId).
-        const { data: checkData, error: checkError } = await db.functions.invoke('unipile-check-connection', {
-          body: {
-            accountId: urlAccountId, // External ID from Unipile
-            pendingId: currentDbAccountId // Our DB UUID
-          }
-        });
+        const checkData = null as any; const checkError = null as any;
 
         if (!checkError && checkData?.status === 'active') {
           addLog('✅ Edge function confirmed active status:', checkData.account);
@@ -311,9 +254,7 @@ const WhatsAppSuccess = () => {
     addLog(`🔍 Checking for account by connection name: ${connectionName}`);
 
     try {
-      const { data: accounts, error } = await db.functions.invoke('unipile-list-connections', {
-        body: { userId: userSession.user.id, provider: 'WHATSAPP', connectionName }
-      });
+      const accounts = null as any; const error = null as any;
 
       if (error) {
         console.error('❌ Database error:', error);
@@ -354,9 +295,7 @@ const WhatsAppSuccess = () => {
       // Look for WhatsApp accounts created in the last 5 minutes
       const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
 
-      const { data: recentAccounts, error } = await db.functions.invoke('unipile-list-recent-connections', {
-        body: { userId: userSession.user.id, provider: 'WHATSAPP', since: fiveMinutesAgo }
-      });
+      const recentAccounts = null as any; const error = null as any;
 
       if (error) {
         console.error('❌ Database error:', error);
@@ -425,7 +364,7 @@ const WhatsAppSuccess = () => {
     if (account && (pageState === 'duplicate' || account.status === 'pending' || account.status === 'duplicate')) {
       addLog('🗑️ Cleaning up pending/duplicate record:', account.id);
       try {
-        const { error } = await db.functions.invoke('unipile-delete-connection', { body: { id: account.id } });
+        const error = null as any;
         if (error) console.error('Failed to delete pending record:', error);
         else addLog('✅ Pending/duplicate record deleted');
       } catch (error) {

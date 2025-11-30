@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, Clock, Download } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { db } from "@/lib/mock-db";
+ 
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -56,47 +56,23 @@ const OutreachResultsDisplay: React.FC<OutreachResultsDisplayProps> = ({
 
   const downloadResults = async () => {
     try {
-      const { data, error } = await db.functions.invoke('download-outreach-results', {
-        body: {
-          batch_id: batchId,
-          pipeline_id: pipelineId,
-          user_id: user?.id,
-          exclude_message: true // Always exclude message column for cleaner CSV
-        }
-      });
-
-      if (error) throw error;
-
-      if (data.success && data.csv_content) {
-        // Create and download CSV file
-        const blob = new Blob([data.csv_content], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = data.filename || `outreach_results_${batchId}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-
-        const messageText = data.excluded_message 
-          ? 'CSV exported without message content for cleaner data'
-          : 'CSV exported with full message content';
-
-        toast({
-          title: "Download Complete",
-          description: `Downloaded ${data.summary.total} results (${data.summary.successful} successful, ${data.summary.failed} failed). ${messageText}`,
-        });
-      } else {
-        throw new Error(data.message || 'Download failed');
-      }
+      await new Promise(res => setTimeout(res, 200));
+      const headers = ['response_status','opportunity_name','client_name','client_phone','timestamp'];
+      const rows = results.map(r => [r.response_status, r.opportunity_name, r.client_name, r.client_phone, r.timestamp].join(','));
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `outreach_results_${batchId}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast({ title: "Download Complete", description: `Downloaded ${results.length} results` });
     } catch (error: any) {
       console.error('Error downloading results:', error);
-      toast({
-        title: "Download Failed",
-        description: error.message || "Failed to download outreach results",
-        variant: "destructive",
-      });
+      toast({ title: "Download Failed", description: error.message || "Failed to download outreach results", variant: "destructive" });
     }
   };
 

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { db } from "@/lib/mock-db";
+ 
 
 export interface EnumOption {
   value: string;
@@ -15,21 +15,6 @@ export const useEnumValues = (enumName: string): { options: EnumOption[]; loadin
   useEffect(() => {
     const fetchEnumValues = async () => {
       try {
-        const { data, error } = await db.rpc('get_enum_values', { enum_name: enumName });
-        
-        if (error) throw error;
-        
-        const enumOptions = ((data as string[]) || []).map((value: string) => ({
-          value,
-          label: value.charAt(0).toUpperCase() + value.slice(1)
-        }));
-        
-        setOptions(enumOptions);
-      } catch (err: any) {
-        console.error(`Error fetching enum values for ${enumName}:`, err);
-        setError(err.message);
-        
-        // Fallback for known enums
         if (enumName === 'opportunity_status') {
           setOptions([
             { value: 'active', label: 'Active' },
@@ -44,7 +29,11 @@ export const useEnumValues = (enumName: string): { options: EnumOption[]; loadin
             { value: 'active', label: 'Active' },
             { value: 'inactive', label: 'Inactive' }
           ]);
+        } else {
+          setOptions([]);
         }
+      } catch (err: any) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }

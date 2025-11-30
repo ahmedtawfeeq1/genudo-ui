@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { RefreshCw, Loader2, MessageCircle } from "lucide-react";
 import ConnectionStatusListener from "@/components/whatsapp/ConnectionStatusListener";
-import { db } from "@/lib/mock-db";
+ 
 import { useToast } from "@/hooks/use-toast";
 import { ConnectorAccount } from "@/types/pipeline";
 
@@ -48,23 +48,8 @@ const ChannelReconnectDialog: React.FC<ChannelReconnectDialogProps> = ({
     setReconnectError(null);
 
     try {
-      const { data: reconnectResponse, error: reconnectError } = await db.functions.invoke('unipile-reconnect', {
-        body: {
-          connectorAccountId: connectorAccount.id,
-          connectionName: connectorAccount.connector_account_identifier,
-          appUrl: window.location.origin,
-        },
-      });
-
-      if (reconnectError) {
-        throw new Error(`Failed to initiate reconnection: ${reconnectError.message}`);
-      }
-
-      if (!reconnectResponse || !reconnectResponse.url) {
-        throw new Error('Failed to get reconnection URL');
-      }
-
-      setReconnectUrl(reconnectResponse.url);
+      await new Promise(res => setTimeout(res, 200));
+      setReconnectUrl(`${window.location.origin}/connection/reconnect`);
       setReconnectStep('qr_scan');
     } catch (error: any) {
       setReconnectError(error.message || 'Failed to initiate reconnection');

@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from "@/lib/mock-db";
+ 
 import { uploadFileToLoopXConsole } from './loopxConsoleService';
 
 /**
@@ -223,8 +223,7 @@ export async function createKnowledgeTable(params: {
   formattedConsoleData?: any; // Console response data for formatted file
   answerWithColumns?: string[]; // Answer With columns to persist in metadata
 }): Promise<string> {
-  const user = (await db.auth.getUser()).data.user;
-  if (!user) throw new Error('Not authenticated');
+  const user = { id: 'user-static' } as any;
 
   // Generate rows with UUIDs (for formatted Excel only)
   const rows: RowData[] = params.rowsData.map((row) => {

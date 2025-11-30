@@ -1,5 +1,5 @@
 
-import { db } from '@/lib/mock-db';
+ 
 import { useAuth } from '@/contexts/AuthContext';
 
 export const cleanupOutreachResults = async (batchId: string, userId: string) => {
@@ -11,10 +11,7 @@ export const cleanupOutreachResults = async (batchId: string, userId: string) =>
   try {
     console.log('🧹 Aggressively cleaning up ALL outreach results for batch:', batchId);
     
-    // Static mode: no backend delete; emit a log via function invoke
-    await db.functions.invoke('outreach-results-cleanup', {
-      body: { batch_id: batchId, user_id: userId }
-    });
+    // Static mode: no backend delete
 
     console.log('✅ Successfully cleaned up ALL outreach results for batch:', batchId);
   } catch (error) {

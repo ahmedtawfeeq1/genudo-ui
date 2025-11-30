@@ -1,4 +1,3 @@
-import { db } from "@/lib/mock-db";
 import { DEFAULT_CONFIG_METADATA } from "@/constants/aiModels";
 import { uploadFileToLoopXConsole, validateFileForUpload } from "./loopxConsoleService";
 import { seedDemoAgents, seedDemoKnowledge } from "@/lib/featureFlags";
@@ -56,8 +55,7 @@ function sanitizeFilename(filename: string): string {
  * Fetch all agents for the current user
  */
 export const fetchAgents = async (): Promise<AgentListItem[]> => {
-  const { data: { user } } = await db.auth.getUser();
-  if (!user) throw new Error("User not authenticated");
+  const user = { id: 'user-static' } as any;
   if (seedDemoAgents && mockAgents.length === 0) {
     const now = new Date().toISOString();
     const a1: Agent = {
@@ -113,8 +111,7 @@ export const fetchAgents = async (): Promise<AgentListItem[]> => {
  * Fetch a single agent by ID with all relations
  */
 export const fetchAgentById = async (agentId: string): Promise<AgentWithRelations> => {
-  const { data: { user } } = await db.auth.getUser();
-  if (!user) throw new Error("User not authenticated");
+  const user = { id: 'user-static' } as any;
   await new Promise(res => setTimeout(res, 100));
   let agent = mockAgents.find(a => a.id === agentId);
   if (!agent) {
@@ -171,8 +168,7 @@ export const fetchAgentById = async (agentId: string): Promise<AgentWithRelation
  * Create a new agent
  */
 export const createAgent = async (agentData: CreateAgentDTO): Promise<Agent> => {
-  const { data: { user } } = await db.auth.getUser();
-  if (!user) throw new Error("User not authenticated");
+  const user = { id: 'user-static' } as any;
   await new Promise(res => setTimeout(res, 120));
   const now = new Date().toISOString();
   const agent: Agent = {
@@ -199,8 +195,7 @@ export const createAgent = async (agentData: CreateAgentDTO): Promise<Agent> => 
  * Update an existing agent
  */
 export const updateAgent = async (agentId: string, updates: UpdateAgentDTO): Promise<Agent> => {
-  const { data: { user } } = await db.auth.getUser();
-  if (!user) throw new Error("User not authenticated");
+  const user = { id: 'user-static' } as any;
   await new Promise(res => setTimeout(res, 100));
   const idx = mockAgents.findIndex(a => a.id === agentId);
   if (idx === -1) throw new Error("Agent not found");
@@ -215,8 +210,6 @@ export const updateAgent = async (agentId: string, updates: UpdateAgentDTO): Pro
  * Delete an agent and all its related data
  */
 export const deleteAgent = async (agentId: string): Promise<void> => {
-  const { data: { user } } = await db.auth.getUser();
-  if (!user) throw new Error("User not authenticated");
   await new Promise(res => setTimeout(res, 100));
   const idx = mockAgents.findIndex(a => a.id === agentId);
   if (idx !== -1) mockAgents.splice(idx, 1);
@@ -228,8 +221,6 @@ export const deleteAgent = async (agentId: string): Promise<void> => {
  * Toggle agent active status
  */
 export const toggleAgentStatus = async (agentId: string, isActive: boolean): Promise<void> => {
-  const { data: { user } } = await db.auth.getUser();
-  if (!user) throw new Error("User not authenticated");
   await new Promise(res => setTimeout(res, 80));
   const a = mockAgents.find(x => x.id === agentId);
   if (a) a.is_active = isActive as any;
@@ -247,8 +238,6 @@ export const uploadKnowledgeFile = async (
   file: File,
   fileType: "excel" | "markdown" | "text"
 ): Promise<KnowledgeFile> => {
-  const { data: { user } } = await db.auth.getUser();
-  if (!user) throw new Error("User not authenticated");
   const validation = validateFileForUpload(file);
   if (!validation.valid) throw new Error(validation.error);
   const now = new Date().toISOString();
@@ -286,11 +275,6 @@ export const uploadKnowledgeFile = async (
  * Note: Files are stored in Loop-X console, so we only delete the database record
  */
 export const deleteKnowledgeFile = async (fileId: string): Promise<void> => {
-  const { data: { user } } = await db.auth.getUser();
-
-  if (!user) {
-    throw new Error("User not authenticated");
-  }
 
   for (const agentId of Object.keys(mockKnowledgeFilesByAgent)) {
     const list = mockKnowledgeFilesByAgent[agentId];
@@ -370,8 +354,6 @@ export const fetchKnowledgeFiles = async (agentId: string): Promise<KnowledgeFil
  * This sends the files to Loop-X API for processing
  */
 export const trainAgentWithFiles = async (agentId: string, fileIds: string[]): Promise<{ success: boolean; message: string }> => {
-  const { data: { user } } = await db.auth.getUser();
-  if (!user) throw new Error("User not authenticated");
   await new Promise(res => setTimeout(res, 150));
   const list = mockKnowledgeFilesByAgent[agentId] || [];
   let count = 0;

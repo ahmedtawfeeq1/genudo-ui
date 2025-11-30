@@ -18,7 +18,7 @@ import {
   Smartphone,
   Zap
 } from 'lucide-react';
-import { db } from "@/lib/mock-db";
+ 
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -80,31 +80,9 @@ const WhatsAppConnectionWizard: React.FC<WhatsAppConnectionWizardProps> = ({
       console.log('User ID:', user?.id);
       console.log('Connection Name:', connectionName);
 
-      const { data: authResponse, error: authError } = await db.functions.invoke('unipile-auth', {
-        body: {
-          userId: user?.id,
-          connectionName: connectionName.trim(),
-          provider: 'WHATSAPP'
-        }
-      });
-
-      if (authError) {
-        console.error('Edge function call failed:', authError);
-        throw new Error(`Function call failed: ${authError.message}`);
-      }
-
-      if (!authResponse || authResponse.error) {
-        console.error('Function returned error:', authResponse?.error);
-        throw new Error(`Authentication failed: ${authResponse?.error || 'Unknown error'}`);
-      }
-
-      if (!authResponse.url) {
-        console.error('No URL in function response:', authResponse);
-        throw new Error('No authentication URL received from service');
-      }
-
-      console.log('✅ Received authentication URL:', authResponse.url);
-      setAuthUrl(authResponse.url);
+      await new Promise(res => setTimeout(res, 200));
+      const url = `${window.location.origin}/whatsapp/auth/${encodeURIComponent(connectionName.trim())}`;
+      setAuthUrl(url);
       setCurrentStep('authenticating');
       setPolling(true);
 
@@ -120,17 +98,13 @@ const WhatsAppConnectionWizard: React.FC<WhatsAppConnectionWizardProps> = ({
   const checkConnectionStatus = async () => {
     if (!connectionName.trim()) return;
     try {
-      const { data: checkData } = await db.functions.invoke('unipile-check-connection', {
-        body: { connectionName: connectionName.trim() }
-      });
-      if (checkData?.status === 'active') {
-        setPolling(false);
-        setCurrentStep('success');
-        setTimeout(() => {
-          onConnectionSuccess(checkData.account?.id || 'acc-static');
-          onOpenChange(false);
-        }, 2000);
-      }
+      await new Promise(res => setTimeout(res, 800));
+      setPolling(false);
+      setCurrentStep('success');
+      setTimeout(() => {
+        onConnectionSuccess('acc-static');
+        onOpenChange(false);
+      }, 2000);
     } catch (error: any) {
       console.error('Error checking connection status:', error);
       setPolling(false);
